@@ -64,6 +64,6 @@ class FileStorage:
             regexp_pa = r'\[(.*)\]\s\((.*)\)\s'
             obj_t = re.search(regexp_pa, str_obj)
             key = "{}.{}".format(obj_t.group(1), obj_t.group(2))
-            del(FileStorage.__objects[key])
+            del(self.all()[key])
         else:
             pass

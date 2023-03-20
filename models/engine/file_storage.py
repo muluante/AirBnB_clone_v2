@@ -65,3 +65,5 @@ class FileStorage:
             obj_t = re.search(regexp_pa, str_obj)
             key = "{}.{}".format(obj_t.group(1), obj_t.group(2))
             del(FileStorage.__objects[key])
+        else:
+            pass

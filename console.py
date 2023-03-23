@@ -2,6 +2,7 @@
 """ Console Module """
 import cmd
 import sys
+import re
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -115,13 +116,25 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
+        arg_list = args.split()
         if not args:
             print("** class name missing **")
             return
-        elif args not in HBNBCommand.classes:
+        elif arg_list[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
+        cls = arg_list[0]
+        new_instance = HBNBCommand.classes[cls]()
+        regex_pattern = r'(\w+)="?(\d+\.?[0-9]*|[^"]*)"?'
+        ma = re.findall(regex_pattern, args)
+        for i in range(len(ma)):
+            if ma[i][0] == "name":
+                new_instance.__dict__["name"] = ma[i][1].replace("_", " ")
+            elif ma[i][0] in HBNBCommand.types:
+                new_instance.__dict__[ma[i][0]] =\
+                    HBNBCommand.types[ma[i][0]](ma[i][1])
+            elif ma[i][0] == "city_id" or ma[i][0] == "user_id":
+                new_instance.__dict__[ma[i][0]] = ma[i][1]
         storage.save()
         print(new_instance.id)
         storage.save()
@@ -206,11 +219,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 print_list.append(str(v))
 
         print(print_list)
@@ -319,6 +332,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()

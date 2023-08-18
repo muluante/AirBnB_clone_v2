@@ -12,3 +12,5 @@ def hello_hbnb():
 if __name__ == "__main__":
     """ Main Function """
     app.run(host='0.0.0.0')
+    bind = "0.0.0.0:8080"
+workers = 2
